@@ -1,0 +1,16 @@
+[Unit]
+Description=Astra
+After=network-online.target
+
+[Service]
+TimeoutStartSec=10
+LimitNOFILE=65536
+ExecStartPre=/bin/mkdir -p /etc/astra
+ExecStart=/etc/astra/astra --relay /etc/astra/relay_new.lua -p 8888 --pass deltasoft:Iammadman1 --buffer-size 16384 --buffer-fill 128
+ExecStop=/bin/kill $MAINPID
+ExecReload=/bin/kill -1 $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+

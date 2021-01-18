@@ -1,0 +1,10 @@
+﻿net.ipv4.conf.all.rp_filter = 0
+net.ipv4.conf.default.rp_filter = 0
+net.ipv4.conf.enp5s0f0.rp_filter = 0
+net.ipv4.conf.enp5s0f1.rp_filter = 0
+net.ipv4.conf.enp6s0f0.rp_filter = 0
+net.ipv4.conf.enp6s0f1.rp_filter = 0
+net.ipv4.conf.all.mc_forwarding=1
+net.ipv4.conf.default.mc_forwarding=1
+net.ipv4.conf.enp5s0f1.mc_forwarding=1
+net.ipv4.conf.enp5s0f1.force_igmp_version=2

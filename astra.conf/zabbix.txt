@@ -1,0 +1,7 @@
+﻿#!/bin/bash
+temp_count=$(netstat -tan |grep :8888 |grep ESTABLISHED |wc -l)
+let "session_count=temp_count"
+echo $session_count
+
+
+UserParameter=user_count,/etc/zabbix/user_count
