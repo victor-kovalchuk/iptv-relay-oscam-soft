@@ -1,4 +1,10 @@
 {
+  "default-address-pools":
+  [
+   {"base":"172.31.0.0/24","size":24}
+  ],
+  "ipv6": false,
+  "userland-proxy": false,
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
   "log-opts": {
