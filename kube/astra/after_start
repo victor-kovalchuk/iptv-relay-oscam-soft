@@ -1,0 +1,3 @@
+#!/bin/sh
+/etc/astra/astra-alpine --relay /etc/astra/relay_new.lua -p 8888 --buffer-size 8192 --buffer-fill 128
+
