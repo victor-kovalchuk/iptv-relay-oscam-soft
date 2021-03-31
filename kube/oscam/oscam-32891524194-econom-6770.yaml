@@ -18,12 +18,12 @@ spec:
       containers:
       - env:
         - name: APP_FTDI_SERNUM
-          value: "A800c7FB"
+          value: "A9CA3W8Z"
         - name: APP_PORT
           value: "6770"
         - name: APP_SERVER_IP
           value: "172.17.166.18"
-        image: localhost:5000/oscam:v1
+        image: localhost:5000/oscam:v3
         name: oscam-32891524194-econom-6770
         tty: yes
         securityContext:

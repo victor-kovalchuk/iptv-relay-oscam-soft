@@ -2,7 +2,7 @@
 
 echo "[global]" > oscam.conf
 echo "serverip=$APP_SERVER_IP" >> oscam.conf
-echo "logfile=/dev/tty" >> oscam.conf
+echo "logfile=/dev/stdout" >> oscam.conf
 echo "[cache]" >> oscam.conf
 echo "/dev/null" >> oscam.conf
 echo "[newcamd]" >> oscam.conf
@@ -14,6 +14,8 @@ echo "keepalive=1" >> oscam.conf
 echo "APP_FTDI_SERNUM=$APP_FTDI_SERNUM"
 echo "SERVER_IP=$APP_SERVER_IP"
 
+# echo "{print \"Oscam-$APP_PORT \" \$0}" > awk.conf
+
 for var in $(ls /dev |grep ttyUSB)
 do
         if udevadm info -a -n $var |grep $APP_FTDI_SERNUM
@@ -22,4 +24,4 @@ do
 		break
         fi
 done
-./oscam-1.05-x64 -c .
+./oscam-1.05-x64 -c . |./influx_write $APP_PORT
