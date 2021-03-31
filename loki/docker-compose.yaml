@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  loki:
+    image: grafana/loki:2.0.0
+    volumes:
+            - /var/lib/loki:/loki
+            - /usr/src/iptv-relay-oscam-soft/loki:/etc/config
+    network_mode: host
+    command: -config.file=/etc/config/loki-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.0.0
+    volumes:
+      - /var/lib:/var/lib
+      - /usr/src/iptv-relay-oscam-soft/loki:/etc/promtail
+    command: -config.file=/etc/promtail/config.yml
+    network_mode: host
