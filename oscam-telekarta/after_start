@@ -1,5 +1,5 @@
 #!/bin/sh
-
+touch /tmp/healthy
 echo "[global]" > oscam.conf
 echo "serverip=$APP_SERVER_IP" >> oscam.conf
 echo "logfile=/dev/stdout" >> oscam.conf
@@ -25,4 +25,4 @@ do
         fi
 done
 # ./oscam -c . |awk -f awk.conf
-./oscam -c . |./influx_write $APP_PORT
+./oscam -c . |./influx_write $APP_PORT $MIN_KEY_NUMBER $INFLUX_ADDRESS $INFLUX_PORT $LIVE_DELAY $RESTART_DELAY

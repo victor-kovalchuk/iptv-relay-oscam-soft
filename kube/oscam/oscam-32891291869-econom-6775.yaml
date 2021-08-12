@@ -6,6 +6,8 @@ metadata:
     app: oscam-server
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: oscam-server-pod
@@ -23,9 +25,33 @@ spec:
           value: "6775"
         - name: APP_SERVER_IP
           value: "172.17.166.18"
-        image: localhost:5000/oscam:v3
+        - name: MIN_KEY_NUMBER
+          value: "1"
+        - name: INFLUX_ADDRESS
+          value: "172.17.166.15"
+        - name: INFLUX_PORT
+          value: "8086"
+        - name: LIVE_DELAY
+          value: "6"    # 60 сек
+        - name: RESTART_DELAY
+          value: "12"    # 120 сек
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        image: localhost:5000/oscam:v6
         name: oscam-32891291869-econom-6775
         tty: yes
         securityContext:
           privileged: true
+        volumeMounts:
+        - name: tz-moscow
+          mountPath: /etc/localtime
+      volumes:
+        - name: tz-moscow
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Moscow
 
