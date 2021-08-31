@@ -4,7 +4,7 @@
 [reader]
 label                         = cardreader1
 protocol                      = mouse
-device                        = /dev/$PORT
+device                        = /dev/ttyUSB-ntv10008
 caid                          = 0500
 detect                        = cd
 ident                         = 0500:050A00,FFF500

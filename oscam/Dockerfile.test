@@ -1,8 +1,3 @@
 FROM alpine:latest
-RUN apk add eudev
-WORKDIR /etc/oscam
-COPY *oscam*.* /etc/oscam/
-COPY after_start /etc/oscam/
-COPY influx_write /etc/oscam/
-# ENTRYPOINT ["/etc/oscam/after_start"]
-CMD ["/bin/sh"]
+COPY oscam-1.05-x64 /usr/bin/
+ENTRYPOINT ["/usr/bin/oscam-1.05-x64","-c","/etc/oscam"]

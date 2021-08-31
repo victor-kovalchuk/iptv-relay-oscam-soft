@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oscam-32891176797-econom-6772
+  labels:
+    app: oscam-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: oscam-6772
+  template:
+    metadata:
+      labels:
+        app: oscam-6772
+    spec:
+      hostNetwork: true
+      containers:
+      - image: localhost:5000/oscam:v1
+        name: oscam-32891176797-econom-6772
+        tty: yes
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: "6772"
+          mountPath: /etc/oscam
+        - name: tz-moscow
+          mountPath: /etc/localtime
+      volumes:
+        - name: "6772"
+          configMap:
+            name: "6772"
+        - name: tz-moscow
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Moscow
+

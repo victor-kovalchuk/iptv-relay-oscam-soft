@@ -21,38 +21,32 @@
 
 void error(const char *msg) { perror(msg); exit(0); }
 
-int main(int argc, char **argv) {	// argv[1] - APP_PORT, argv[2] - MIN_KEY_NUMBER, argv[3] - INFLUX_ADDRESS,
-					// argv[4] - INFLUX_PORT, argv[5] - live_delay, argv[6] - restart_delay
+int main(int argc, char **argv) {	// argv[1] - APP_PORT, argv[2] - INFLUX_ADDRESS, argv[3] - INFLUX_PORT
 
 // Init:
 // Oscam port:
 	char oscam_port[64];
 	strcpy(oscam_port,*(argv+1));
-// MIN_KEY_NUMBER:
-	int min_key_number = atoi(*(argv+2));
 // INFLUX DATABASE ADDRESS:
 	char host[128];
-	strcpy(host,*(argv+3));
+	strcpy(host,*(argv+2));
 // INFLUX DATABASE PORT:
-	int port = atoi(*(argv+4));
-// LIVE DELAY - delay before start monitoring live:
-	int live_delay = atoi(*(argv+5));
-	int restart_delay = atoi(*(argv+6));
-	int restart_delay_count = restart_delay;
+	int port = atoi(*(argv+3));
 
         std::stringstream ss;
 	std::string str;
 
-	char buffer[2048];
+	char buffer[4096];
 	int result, nread;
-	bool influx_is_ready=true, influx_is_ready_old_status, zero_count=false;	// Influx database status, zero_count=true - 2 zero count
+	bool influx_is_ready=true, influx_is_ready_old_status;	// Influx database status, zero_count=true - 2 zero count
 	fd_set inputs, testfds;
 	struct timeval timeout;
 	FD_ZERO(&inputs);
 	FD_SET(0, &inputs);
 	int fr;		// Freq card request for 10s
+	bool need_restart = false;
 // Socker initialize:
-	char message[1024], in_buf[512];
+	char message[1024], in_buf[1024];
 	
 	int total;
 	int sockfd = 0;
@@ -92,6 +86,9 @@ int main(int argc, char **argv) {	// argv[1] - APP_PORT, argv[2] - MIN_KEY_NUMBE
 										if (strstr(c,": found")) {
 											fr += 1;
 										}
+										if (strstr(c,"(NMR)")) {
+											need_restart = true;
+										}
 										std::cout << "Oscam-" << oscam_port << " " << c << std::endl;
 										std::cout.flush(); 
 										c = buffer+i+1;
@@ -107,37 +104,19 @@ int main(int argc, char **argv) {	// argv[1] - APP_PORT, argv[2] - MIN_KEY_NUMBE
 					break;
 			}	// switch
 		}		// for
-// Write to influx:
-		switch (live_delay) {
-			case 0:		// keep alive mode
-				if (fr < min_key_number) {
-					if (restart_delay_count != 0) {
-						restart_delay_count--;
-					} else {
-						std::cout << "Oscam-" << oscam_port << " ----------------------------------" << std::endl;
-						std::cout << "Oscam-" << oscam_port << " --- Required restart container ---" << std::endl;
-                                        	std::cout << "Oscam-" << oscam_port << " ----------------------------------" << std::endl;
-						std::cout.flush();
-						// Container restart code:
-						system("rm /tmp/healthy");
-					}
-				} else {
-					restart_delay_count = restart_delay;
-				}
-				std::cout << "Oscam-" << oscam_port << " -------- Current frequency = " << fr << std::endl;
-				std::cout.flush();
-				break;
-			case 1:		// Run keep alive mode
-				live_delay = 0;
-				std::cout << "Oscam-" << oscam_port << " ----------------------------" << std::endl;
-				std::cout << "Oscam-" << oscam_port << " --- Run keep alive mode. ---" << std::endl;
-				std::cout << "Oscam-" << oscam_port << " ----------------------------" << std::endl;
-				std::cout.flush();
-				break;
-			default:			// keep alive delay
-				live_delay--;
-				break;
+// Check reader live:
+		if (need_restart == true) {
+			std::cout << "Oscam-" << oscam_port << " ----------------------------------" << std::endl;
+			std::cout << "Oscam-" << oscam_port << " --- Required restart container ---" << std::endl;
+			std::cout << "Oscam-" << oscam_port << " ----------------------------------" << std::endl;
+			std::cout.flush();
+			// Container restart code:
+			system("rm /tmp/healthy");
 		}
+// Print oscam fr to stdout:
+		std::cout << "Oscam-" << oscam_port << " -------- Current frequency = " << fr << std::endl;
+		std::cout.flush();
+// Write to influx:
 		ss.str("");
 		ss << "count,port=" << oscam_port << " fr=" << fr;
 		str = ss.str();
@@ -153,7 +132,7 @@ int main(int argc, char **argv) {	// argv[1] - APP_PORT, argv[2] - MIN_KEY_NUMBE
 		} else {
 			influx_is_ready = true;
 		}
-		if (influx_is_ready && (live_delay == 0)) {
+		if (influx_is_ready) {
 			write(sockfd,message,(int)strlen(message));
 			close(sockfd);
 			if (!influx_is_ready_old_status) {
@@ -163,7 +142,7 @@ int main(int argc, char **argv) {	// argv[1] - APP_PORT, argv[2] - MIN_KEY_NUMBE
 				std::cout.flush();
 			}
 		} else {
-			if (influx_is_ready_old_status && (live_delay == 0)) {
+			if (influx_is_ready_old_status) {
 				std::cout << "Oscam-" << oscam_port << "-------------------------------" << std::endl;
 				std::cout << "Oscam-" << oscam_port << "--- Error: connection loss. ---" << std::endl;
 				std::cout << "Oscam-" << oscam_port << "-------------------------------" << std::endl;

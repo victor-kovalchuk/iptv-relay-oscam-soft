@@ -1,0 +1,3 @@
+FROM alpine:latest
+COPY oscam /usr/bin/
+ENTRYPOINT ["/usr/bin/oscam","-c","/etc/oscam"]
