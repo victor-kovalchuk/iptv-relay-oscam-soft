@@ -10,3 +10,4 @@ detect                        = cd
 ident                         = 0500:050A00,FFF500
 group                         = 1
 emmcache                      = 1,3,2,0
+disablecrccws                 = 1

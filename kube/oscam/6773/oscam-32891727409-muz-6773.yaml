@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: oscam-32891727409-econom-6773
+  name: oscam-32891727409-muz-6773
   labels:
     app: oscam-server
 spec:
@@ -19,7 +19,7 @@ spec:
       hostNetwork: true
       containers:
       - image: localhost:5000/oscam:v1
-        name: oscam-32891727409-econom-6773
+        name: oscam-32891727409-muz-6773
         tty: yes
         securityContext:
           privileged: true

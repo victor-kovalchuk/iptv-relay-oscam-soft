@@ -45,7 +45,7 @@ int main(int argc, char **argv) {	// argv[1] - APP_PORT, argv[2] - INFLUX_ADDRES
 	FD_SET(0, &inputs);
 	int fr;		// Freq card request for 10s
 	bool need_restart = false;
-// Socker initialize:
+// Socket initialize:
 	char message[1024], in_buf[1024];
 	
 	int total;
